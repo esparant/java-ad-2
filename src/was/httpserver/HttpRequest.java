@@ -1,6 +1,7 @@
 package was.httpserver;
 
 import static java.nio.charset.StandardCharsets.*;
+import static util.MyLogger.log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,11 +20,37 @@ public class HttpRequest {
     public HttpRequest(BufferedReader reader) throws IOException {
         parseRequestLine(reader);
         parseHeaders(reader);
+
+        parseBody(reader);
+    }
+
+    private void parseBody(BufferedReader reader) throws IOException {
+        if (!headers.containsKey("Content-Length")) {
+            return;
+        }
+
+        int length = Integer.parseInt(headers.get("Content-Length"));
+        char[] bodyChars = new char[length];
+        int read = reader.read(bodyChars);
+
+        if (read != length) {
+            throw new IOException("Fail to read entire body. Expected: " + length + " Actual: " + read);
+        }
+
+        String body = new String(bodyChars);
+
+        log("HTTP request body: " + body);
+
+        String contentType = headers.get("Content-Type");
+        if ("application/x-www-form-urlencoded".equals(contentType)) {
+            parseQueryParameters(body);
+
+        }
     }
 
     private void parseHeaders(BufferedReader reader) throws IOException {
         String line;
-        while(!(line = reader.readLine()).isEmpty()) {
+        while (!(line = reader.readLine()).isEmpty()) {
             String[] headerParts = line.split(":");
             headers.put(headerParts[0].trim(), headerParts[1].trim());
         }

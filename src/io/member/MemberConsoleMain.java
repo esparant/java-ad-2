@@ -12,9 +12,9 @@ import java.util.stream.IntStream;
 public class MemberConsoleMain {
 
 //    private static final MemberRepository repository = new MemoryMemberRepository();
-//    private static final MemberRepository repository = new FileMemberRepository();
+    private static final MemberRepository repository = new FileMemberRepository();
 //    private static final MemberRepository repository = new DataStreamMemberRepository();
-    private static final MemberRepository repository = new ObjectStreamMemberRepository();
+//    private static final MemberRepository repository = new ObjectStreamMemberRepository();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
